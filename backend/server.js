@@ -4,6 +4,16 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
+const {
+  getFlights,
+  getFlight,
+  getReservations,
+  addReservations,
+  getSingleReservationByFS,
+  getSingleReservationById,
+  deleteReservation,
+  updateReservation,
+} = require("./handlers");
 
 express()
   // Below are methods that are included in express(). We chain them for convenience.
@@ -19,8 +29,26 @@ express()
   // Nothing to modify above this line
   // ---------------------------------
   // add new endpoints here 👇
+  // return structure: res.status(200).json({ status: 200, data: {}, message: {} });
+  //  always return data related whether fail or not
+  //  if no data need to be returned, provide message
 
-  // get flights (flight numbers)
+  // get flights
+  .get("/flights", getFlights)
+  // get single flight
+  .get("/flights/:flight_num", getFlight)
+  // get reservation
+  .get("/reservations", getReservations)
+  // get single reservation
+  .get("/reservations/:id", getSingleReservationById)
+  // get single reservation
+  .get("/reservations/:flight/:seat", getSingleReservationByFS)
+  // post a reservation
+  .post("/reservations", addReservations)
+  // delete a reservation
+  .delete("/reservations", deleteReservation)
+  // update a reservation (chose to use patch)
+  .patch("/reservations", updateReservation)
 
   // add new endpoints here ☝️
   // ---------------------------------

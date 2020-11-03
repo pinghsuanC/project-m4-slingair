@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Redirect, useLocation } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import FlightSelect from "./FlightSelect";
 import Form from "./Form";
@@ -6,12 +7,14 @@ import Form from "./Form";
 const initialState = { seat: "", givenName: "", surname: "", email: "" };
 
 const SeatSelect = ({ updateUserReservation }) => {
-  const history = useHistory();
+  let history = useHistory();
   const [flightNumber, setFlightNumber] = useState(null);
   const [formData, setFormData] = useState(initialState);
   const [disabled, setDisabled] = useState(true);
   const [subStatus, setSubStatus] = useState("idle");
+  const [push, setPush] = useState(false);
 
+  //console.log(flightNumber, formData);
   useEffect(() => {
     // This hook is listening to state changes and verifying whether or not all
     // of the form data is filled out.
@@ -21,6 +24,7 @@ const SeatSelect = ({ updateUserReservation }) => {
   }, [flightNumber, formData, setDisabled]);
 
   const handleFlightSelect = (ev) => {
+    //console.log("The flight number is set to : " + ev.target.value);
     setFlightNumber(ev.target.value);
   };
 
@@ -43,11 +47,32 @@ const SeatSelect = ({ updateUserReservation }) => {
 
   const handleSubmit = (ev) => {
     ev.preventDefault();
+    //console.log(flightNumber);
     if (validateEmail()) {
       // TODO: Send data to the server for validation/submission
-      // TODO: if 201, add reservation id (received from server) to localStorage
-      // TODO: if 201, redirect to /confirmed (push)
-      // TODO: if error from server, show error to user (stretch goal)
+      // create a post request
+      const postOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ flight: flightNumber, ...formData }),
+      };
+      fetch("/reservations", postOptions)
+        .then((info) => info.json())
+        .then((info) => {
+          let { status, data, message } = info;
+          if (status === 201) {
+            // TODO: if 201, add reservation id (received from server) to localStorage
+            localStorage.setItem("id", data.id);
+            setFormData(initialState);
+            // TODO: if 201, redirect to /confirmed (push)
+            history.push({
+              pathname: "/confirmed",
+              state: { detail: data },
+            });
+          } else {
+            console.log(message);
+          }
+        });
     }
   };
 
