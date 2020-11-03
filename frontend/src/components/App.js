@@ -23,6 +23,7 @@ import Confirmation from "./Confirmation";
 import GlobalStyles, { themeVars } from "./GlobalStyles";
 import Reservation from "./Reservation";
 import Profile from "./Profile";
+import Admin from "./Admin";
 
 const App = () => {
   const [userReservation, setUserReservation] = useState({});
@@ -62,6 +63,9 @@ const App = () => {
           </Route>
           <Route exact path="/view-reservation">
             <Reservation />
+          </Route>
+          <Route exact path="/admin">
+            <Admin />
           </Route>
           <Route exact path="/profile">
             <Profile />
